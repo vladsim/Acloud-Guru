@@ -1,0 +1,9 @@
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0bb3fad3c0286ebd5 # Amazon Linux 2 AMI in DUB
+      InstanceType: t2.micro
+      Tags:
+        - Key: Name
+          Value: AcloudGuru
