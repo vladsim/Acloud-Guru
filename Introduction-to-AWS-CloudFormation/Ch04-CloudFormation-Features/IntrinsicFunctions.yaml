@@ -1,0 +1,13 @@
+Description: >
+  aws cloudformation create-stack --stack-name acloudguru --template-body file://IntrinsicFunctions.yaml
+  aws cloudformation update-stack --stack-name acloudguru --template-body file://IntrinsicFunctions.yaml
+  aws cloudformation delete-stack --stack-name acloudguru
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0ce1e3f77cd41957e # Amazon Linux 2 AMI in DUB
+      InstanceType: t2.micro
+      Tags:
+        - Key: "Name"
+          Value: !Join [ " ", [ EC2, Instance, with, Fn, Join]  ]
