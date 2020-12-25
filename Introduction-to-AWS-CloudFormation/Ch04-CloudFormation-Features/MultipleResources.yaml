@@ -1,0 +1,27 @@
+Description: >
+  aws cloudformation create-stack --stack-name acloudguru --template-body file://MultipleResources.yaml
+  aws cloudformation update-stack --stack-name acloudguru --template-body file://MultipleResources.yaml
+  aws cloudformation delete-stack --stack-name acloudguru
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-01720b5f421cf0179 # Amazon Linux 2 AMI in DUB
+      InstanceType: t2.micro
+      Tags:
+        - Key: "Name"
+          Value: "Acloud Guru"
+      SecurityGroups:
+        - !Ref MySecurityGroup
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH Access access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: "Name"
+          Value: "MySecurityGroup"
