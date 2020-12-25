@@ -1,0 +1,38 @@
+Description: >
+  aws cloudformation create-stack --stack-name acloudguru --template-body file://Mappings.yaml
+  aws cloudformation update-stack --stack-name acloudguru --template-body file://Mappings.yaml
+  aws cloudformation delete-stack --stack-name acloudguru
+
+Mappings:
+  RegionMap:
+    eu-west-1: 
+      AMI: ami-01720b5f421cf0179
+    eu-central-1: 
+      AMI: ami-03c3a7e4263fd998c
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [ RegionMap, !Ref AWS::Region, AMI ]
+      InstanceType: t2.micro
+      Tags:
+        - Key: "Name"
+          Value: !Join 
+            - ""
+            - - "EC2 Instance for "
+              - !Ref AWS::Region
+      SecurityGroups:
+        - !Ref MySecurityGroup
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH Access access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: "Name"
+          Value: "MySecurityGroup"
