@@ -1,0 +1,48 @@
+Description: >
+  aws cloudformation create-stack --stack-name acloudguru --template-body file://Outputs.yaml --parameters ParameterKey=NameOfService,ParameterValue="Using input parameters" ParameterKey=KeyName,ParameterValue=<key_name>
+  aws cloudformation update-stack --stack-name acloudguru --template-body file://Outputs.yaml --parameters ParameterKey=NameOfService,ParameterValue="Using input parameters" ParameterKey=KeyName,ParameterValue=<key_name>
+  aws cloudformation delete-stack --stack-name acloudguru
+
+Parameters:
+  NameOfService:
+    Description: The name of the service this stack is to be used for.
+    Type: String
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access into the server
+    Type: AWS::EC2::KeyPair::KeyName
+
+Mappings:
+  RegionMap:
+    eu-west-1: 
+      AMI: ami-01720b5f421cf0179
+    eu-central-1: 
+      AMI: ami-03c3a7e4263fd998c
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [ RegionMap, !Ref AWS::Region, AMI ]
+      InstanceType: t2.micro
+      Tags:
+        - Key: Name
+          Value: !Ref NameOfService
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: !Ref KeyName
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH Access access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: "Name"
+          Value: "MySecurityGroup"
+
+Outputs:
+  ServerDns:
+    Value: !GetAtt EC2Instance.PublicDnsName
